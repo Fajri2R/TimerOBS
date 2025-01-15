@@ -1,4 +1,4 @@
-# Timer Countdown and Countup for OBS
+# Timer Countdown and Countup for OBS and Streamlabs
 
 Proyek ini menyediakan timer hitung mundur (countdown) dan hitung maju (countup) untuk digunakan sebagai sumber browser (browser source) di OBS Studio. Timer ini berguna bagi para streamer untuk menampilkan waktu tunggu atau durasi waktu saat streaming berlangsung.
 
