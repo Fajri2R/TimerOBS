@@ -26,12 +26,16 @@ Contoh penggunaannya dapat dilihat pada video live streaming turnamen MLBB Onlin
 4. Atur ukuran sumber sesuai kebutuhan.
 5. Sesuaikan pengaturan lainnya, seperti waktu mulai untuk countdown atau countup.
 
+### Mengubah Waktu
+Untuk mengubah waktu bisa edit secara langsung URL web timer, sebagai contoh ini saya menggunakan format mm:ss
+![image](https://github.com/user-attachments/assets/11ae8da5-b6b9-4d02-aa50-b4de2f7067db)
+Perhatikan gambar di atas:
+- **10** menunjukkan angka 10.
+- **%3A** menunjukkan simbol ":".
+- **00** menunjukkan angka 00.
+
 ### Kontribusi
 Kontribusi dalam bentuk kode atau ide sangat diterima. Jika Anda ingin berkontribusi, silakan lakukan fork pada repository ini, buat perubahan, dan ajukan pull request.
 
 ### Lisensi
 Proyek ini dirilis di bawah lisensi MIT, yang berarti Anda bebas untuk menggunakannya, memodifikasinya, dan mendistribusikannya dengan syarat tetap mencantumkan hak cipta asli.
-
----
-
-Selamat menggunakan timer untuk OBS dan semoga bermanfaat bagi kegiatan streaming Anda!
