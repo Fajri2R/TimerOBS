@@ -1,10 +1,7 @@
 body {
-  margin: 0;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  background-color: transparent;
 }
 
 #settings-container {
@@ -12,7 +9,7 @@ body {
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   padding: 20px;
-  width: 90%;
+  width: 100%;
   max-width: 400px;
 }
 
@@ -73,23 +70,21 @@ input[type='checkbox'] {
   border: 1px solid #ddd;
 }
 
-#timer-container {
-  text-align: center;
-  font-family: Arial, sans-serif;
+#font-dropdown {
+  position: absolute;
+  background: white;
+  border: 1px solid #ccc;
+  max-height: 150px;
+  overflow-y: auto;
+  display: none;
+  z-index: 10;
 }
 
-#timer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 5rem;
-  font-weight: bold;
+#font-dropdown div {
+  padding: 8px;
+  cursor: pointer;
 }
 
-.time-part {
-  margin: 0 5px;
-}
-
-.divider {
-  font-size: 5rem;
+#font-dropdown div:hover {
+  background-color: #f0f0f0;
 }

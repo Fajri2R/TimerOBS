@@ -1,0 +1,29 @@
+body {
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: transparent;
+}
+
+#timer-container {
+  text-align: center;
+  font-family: Arial, sans-serif;
+}
+
+#timer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 5rem;
+  font-weight: bold;
+}
+
+.time-part {
+  margin: 0 5px;
+}
+
+.divider {
+  font-size: 5rem;
+}

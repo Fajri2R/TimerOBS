@@ -4,208 +4,127 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Timer Settings</title>
-    <link rel="stylesheet" href="styles.css" />
-    <style>
-      #font-dropdown {
-        position: absolute;
-        background: white;
-        border: 1px solid #ccc;
-        max-height: 150px;
-        overflow-y: auto;
-        display: none;
-        z-index: 10;
-      }
-
-      #font-dropdown div {
-        padding: 8px;
-        cursor: pointer;
-      }
-
-      #font-dropdown div:hover {
-        background-color: #f0f0f0;
-      }
-    </style>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
   </head>
   <body>
-    <div id="settings-container">
-      <h1>Configure Your Timer</h1>
-      <form id="settings-form" action="display.html" method="get">
-        <!-- Timer Mode Selection -->
-        <div class="form-group">
-          <label for="mode">Timer Mode:</label>
-          <select id="mode" name="mode" required>
-            <option value="countup">Countup</option>
-            <option value="countdown">Countdown</option>
-          </select>
+    <div class="container mt-5">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h1 class="text-center mb-4">Configure Your Timer</h1>
+          <form id="settings-form" action="display.html" method="get">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label for="mode" class="form-label">Timer Mode:</label>
+                <select id="mode" name="mode" class="form-select" required>
+                  <option value="countup">Countup</option>
+                  <option value="countdown">Countdown</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label for="time" class="form-label">Initial Time:</label>
+                <input
+                  type="text"
+                  id="time"
+                  name="time"
+                  class="form-control"
+                  placeholder="e.g., 00:10:00 (HH:mm:ss)"
+                  required
+                />
+              </div>
+              <div class="col-md-6">
+                <label for="format" class="form-label">Time Format:</label>
+                <select id="format" name="format" class="form-select" required>
+                  <option value="hh:mm:ss">HH:mm:ss</option>
+                  <option value="mm:ss">mm:ss</option>
+                  <option value="ss">ss</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label for="font" class="form-label"
+                  >Font (Google Fonts):</label
+                >
+                <div class="dropdown">
+                  <input
+                    type="text"
+                    id="font"
+                    name="font"
+                    class="form-control dropdown-toggle"
+                    placeholder="Enter Google Font (e.g., Roboto)"
+                    required
+                    autocomplete="off"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                  />
+                  <ul id="font-dropdown" class="dropdown-menu w-100"></ul>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <label for="bg_color" class="form-label"
+                  >Background Color:</label
+                >
+                <input
+                  type="color"
+                  id="bg_color"
+                  name="bg_color"
+                  class="form-control form-control-color"
+                  value="#ffffff"
+                />
+              </div>
+              <div class="col-md-3">
+                <label for="text_color" class="form-label">Text Color:</label>
+                <input
+                  type="color"
+                  id="text_color"
+                  name="text_color"
+                  class="form-control form-control-color"
+                  value="#000000"
+                />
+              </div>
+              <div class="col-md-6">
+                <label for="transparent" class="form-label"
+                  >Transparent Background:</label
+                >
+                <div class="form-check form-switch">
+                  <input
+                    type="checkbox"
+                    id="transparent"
+                    name="transparent"
+                    class="form-check-input"
+                    value="1"
+                  />
+                </div>
+              </div>
+              <div class="col-md-12">
+                <label for="end_message" class="form-label"
+                  >Custom End Message (Countdown Only):</label
+                >
+                <input
+                  type="text"
+                  id="end_message"
+                  name="end_message"
+                  class="form-control"
+                  placeholder="e.g., Time's Up!"
+                  disabled
+                />
+              </div>
+              <div class="col-12">
+                <button
+                  type="submit"
+                  class="btn btn-primary w-100"
+                  formtarget="_blank"
+                >
+                  Start Timer
+                </button>
+              </div>
+            </div>
+          </form>
         </div>
-
-        <!-- Initial Time -->
-        <div class="form-group">
-          <label for="time">Initial Time:</label>
-          <input
-            type="text"
-            id="time"
-            name="time"
-            placeholder="e.g., 00:10:00 (HH:mm:ss)"
-            required
-          />
-        </div>
-
-        <!-- Time Format -->
-        <div class="form-group">
-          <label for="format">Time Format:</label>
-          <select id="format" name="format" required>
-            <option value="hh:mm:ss">HH:mm:ss</option>
-            <option value="mm:ss">mm:ss</option>
-            <option value="ss">ss</option>
-          </select>
-        </div>
-
-        <!-- Font Selection -->
-        <div class="form-group">
-          <label for="font">Font (Google Fonts):</label>
-          <input
-            type="text"
-            id="font"
-            name="font"
-            placeholder="Enter Google Font (e.g., Roboto)"
-            required
-            autocomplete="off"
-          />
-          <div id="font-dropdown"></div>
-        </div>
-
-        <!-- Background Color -->
-        <div class="form-group">
-          <label for="bg_color">Background Color:</label>
-          <input type="color" id="bg_color" name="bg_color" value="#ffffff" />
-        </div>
-
-        <!-- Text Color -->
-        <div class="form-group">
-          <label for="text_color">Text Color:</label>
-          <input
-            type="color"
-            id="text_color"
-            name="text_color"
-            value="#000000"
-          />
-        </div>
-
-        <!-- Transparent Background -->
-        <div class="form-group">
-          <label for="transparent">Transparent Background:</label>
-          <input
-            type="checkbox"
-            id="transparent"
-            name="transparent"
-            value="1"
-          />
-        </div>
-
-        <!-- Custom End Message -->
-        <div class="form-group">
-          <label for="end_message">Custom End Message (Countdown Only):</label>
-          <input
-            type="text"
-            id="end_message"
-            name="end_message"
-            placeholder="e.g., Time's Up!"
-            disabled
-          />
-        </div>
-
-        <!-- Submit Button -->
-        <div class="form-group">
-          <button type="submit" formtarget="_blank">Start Timer</button>
-        </div>
-      </form>
+      </div>
     </div>
-
-    <script>
-      document.getElementById('mode').addEventListener('change', function () {
-        const timeInput = document.getElementById('time');
-        const endMessageInput = document.getElementById('end_message');
-        timeInput.placeholder =
-          this.value === 'countup'
-            ? 'Start time (HH:mm:ss or 0)'
-            : 'Countdown time (HH:mm:ss)';
-        endMessageInput.disabled = this.value === 'countup';
-      });
-
-      const fontInput = document.getElementById('font');
-      const fontDropdown = document.getElementById('font-dropdown');
-
-      const fonts = [
-        'Roboto',
-        'Open Sans',
-        'Lato',
-        'Montserrat',
-        'Oswald',
-        'Raleway',
-        'Merriweather',
-        'Poppins',
-        'Ubuntu',
-        'Playfair Display',
-        'Nunito',
-        'Bebas Neue',
-        'Arial, sans-serif',
-        'Courier New, monospace',
-        'Times New Roman, serif',
-      ];
-
-      fontInput.addEventListener('input', function () {
-        const query = this.value.toLowerCase();
-
-        // Clear dropdown
-        fontDropdown.innerHTML = '';
-
-        if (query) {
-          // Filter fonts
-          const filteredFonts = fonts.filter((font) =>
-            font.toLowerCase().includes(query),
-          );
-
-          // Populate dropdown
-          filteredFonts.forEach((font) => {
-            const option = document.createElement('div');
-            option.textContent = font;
-            option.addEventListener('click', () => {
-              fontInput.value = font;
-              fontDropdown.style.display = 'none';
-
-              // Dynamically load Google Font if applicable
-              if (!font.includes(',')) {
-                const fontLink = document.createElement('link');
-                fontLink.href = `https://fonts.googleapis.com/css2?family=${font.replace(
-                  / /g,
-                  '+',
-                )}&display=swap`;
-                fontLink.rel = 'stylesheet';
-                document.head.appendChild(fontLink);
-              }
-
-              document.body.style.fontFamily = font;
-            });
-            fontDropdown.appendChild(option);
-          });
-
-          fontDropdown.style.display =
-            filteredFonts.length > 0 ? 'block' : 'none';
-        } else {
-          fontDropdown.style.display = 'none';
-        }
-      });
-
-      // Close dropdown when clicking outside
-      document.addEventListener('click', function (event) {
-        if (
-          !fontInput.contains(event.target) &&
-          !fontDropdown.contains(event.target)
-        ) {
-          fontDropdown.style.display = 'none';
-        }
-      });
-    </script>
+    <script src="main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>
