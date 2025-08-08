@@ -70,6 +70,8 @@ function applyFont(font) {
   document.body.style.fontFamily = font;
 }
 
+const fontSizeInput = document.getElementById('font_size');
+
 fontInput.addEventListener('input', async function () {
   const query = this.value.toLowerCase().trim();
   populateDropdown(query);
