@@ -1,144 +1,635 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Timer Settings</title>
+    <title>TimerOBS Builder</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap"
       rel="stylesheet"
     />
+    <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <div class="container mt-5">
-      <div class="card shadow-sm">
-        <div class="card-body">
-          <h1 class="text-center mb-4">Configure Your Timer</h1>
-          <form id="settings-form" action="display.html" method="get">
-            <div class="row g-3">
-              <div class="col-md-6">
-                <label for="mode" class="form-label">Timer Mode:</label>
-                <select id="mode" name="mode" class="form-select" required>
-                  <option value="countup">Countup</option>
-                  <option value="countdown">Countdown</option>
-                </select>
+    <div class="page-shell">
+      <section class="hero-panel">
+        <span class="eyebrow">Timer overlay builder</span>
+        <h1>Desain timer stream yang siap tayang, langsung dari satu panel.</h1>
+        <p class="hero-copy">
+          Builder ini sekarang mendukung live preview transparan, labels, titles,
+          gaya timer yang lebih variatif, serta kontrol tipografi yang lebih
+          cocok untuk kebutuhan OBS, turnamen, countdown intro, dan broadcast
+          overlay.
+        </p>
+        <div class="hero-points">
+          <div class="hero-point">
+            <strong>Live preview yang nyata</strong>
+            <span>
+              Saat background transparan aktif, preview menampilkan transparansi
+              sungguhan di atas checkerboard.
+            </span>
+          </div>
+          <div class="hero-point">
+            <strong>Streaming-ready fonts</strong>
+            <span>
+              Font populer untuk esports, countdown, dan on-stream branding
+              tersedia lebih cepat.
+            </span>
+          </div>
+          <div class="hero-point">
+            <strong>Lebih fleksibel</strong>
+            <span>
+              Toggle stroke, shadow, labels, titles, plus style seperti card,
+              bar, dan circle.
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <main class="workspace-card">
+        <form id="settings-form" class="config-panel" novalidate>
+          <div class="panel-header">
+            <div>
+              <span class="eyebrow">Configure</span>
+              <h2>Builder panel</h2>
+              <p id="draft-state" class="micro-copy" aria-live="polite">
+                Draft tersimpan otomatis di browser ini.
+              </p>
+            </div>
+            <div class="panel-header-tools">
+              <span class="badge-pill">Auto preview</span>
+              <button type="button" id="reset-settings" class="ghost-button">
+                Reset defaults
+              </button>
+            </div>
+          </div>
+
+          <section class="section-card">
+            <div class="section-title-row">
+              <div>
+                <h3>Timer setup</h3>
+                <p>Pilih mode, format, waktu awal, dan style dasar timer.</p>
               </div>
-              <div class="col-md-6">
-                <label for="time" class="form-label">Initial Time:</label>
+            </div>
+
+            <div class="field-grid">
+              <label class="field">
+                <span>Timer mode</span>
+                <select id="mode" name="mode">
+                  <option value="countdown">Countdown</option>
+                  <option value="countup">Countup</option>
+                </select>
+              </label>
+
+              <label class="field">
+                <span>Display format</span>
+                <select id="format" name="format">
+                  <option value="hh:mm:ss">HH:mm:ss</option>
+                  <option value="hh:mm:ss:ms">HH:mm:ss:ms</option>
+                  <option value="mm:ss">mm:ss</option>
+                  <option value="ss">ss</option>
+                </select>
+              </label>
+
+              <label class="field field-span-2">
+                <span>Initial time</span>
                 <input
                   type="text"
                   id="time"
                   name="time"
-                  class="form-control"
-                  placeholder="e.g., 00:10:00 (HH:mm:ss)"
-                  required
+                  value="00:10:00"
+                  placeholder="Contoh: 00:10:00"
+                  inputmode="numeric"
+                  autocomplete="off"
+                  aria-describedby="time-hint"
+                  maxlength="14"
                 />
-              </div>
-              <div class="col-md-6">
-                <label for="format" class="form-label">Time Format:</label>
-                <select id="format" name="format" class="form-select" required>
-                  <option value="hh:mm:ss">HH:mm:ss</option>
-                  <option value="mm:ss">mm:ss</option>
-                  <option value="ss">ss</option>
-                </select>
-              </div>
-              <div class="col-md-6">
-                <label for="font" class="form-label"
-                  >Font (Google Fonts):</label
-                >
-                <div class="dropdown">
-                  <input
-                    type="text"
-                    id="font"
-                    name="font"
-                    class="form-control dropdown-toggle"
-                    placeholder="Enter Google Font (e.g., Roboto)"
-                    required
-                    autocomplete="off"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false"
-                  />
-                  <ul id="font-dropdown" class="dropdown-menu w-100"></ul>
-                </div>
-              </div>
-              <div class="col-md-6">
-                <label for="font_size" class="form-label">Font Size (px):</label>
-                <input
-                  type="number"
-                  id="font_size"
-                  name="font_size"
-                  class="form-control"
-                  placeholder="e.g., 5"
-                  value="50"
-                  min="1"
-                  step="0.1"
-                  required
-                />
-              </div>
-              <div class="col-md-3">
-                <label for="bg_color" class="form-label"
-                  >Background Color:</label
-                >
-                <input
-                  type="color"
-                  id="bg_color"
-                  name="bg_color"
-                  class="form-control form-control-color"
-                  value="#ffffff"
-                />
-              </div>
-              <div class="col-md-3">
-                <label for="text_color" class="form-label">Text Color:</label>
-                <input
-                  type="color"
-                  id="text_color"
-                  name="text_color"
-                  class="form-control form-control-color"
-                  value="#000000"
-                />
-              </div>
-              <div class="col-md-6">
-                <label for="transparent" class="form-label"
-                  >Transparent Background:</label
-                >
-                <div class="form-check form-switch">
-                  <input
-                    type="checkbox"
-                    id="transparent"
-                    name="transparent"
-                    class="form-check-input"
-                    value="1"
-                  />
-                </div>
-              </div>
-              <div class="col-md-12">
-                <label for="end_message" class="form-label"
-                  >Custom End Message (Countdown Only):</label
-                >
+                <small id="time-hint" class="field-hint">
+                  Input mengikuti format terpilih. Bisa juga pakai angka tunggal
+                  untuk satuan detik.
+                </small>
+              </label>
+
+              <label class="field field-span-2">
+                <span>Countdown end message</span>
                 <input
                   type="text"
                   id="end_message"
                   name="end_message"
-                  class="form-control"
-                  placeholder="e.g., Time's Up!"
-                  disabled
+                  value="Time's Up!"
+                  placeholder="Contoh: Stream Starts Now"
+                  maxlength="120"
                 />
-              </div>
-              <div class="col-12">
-                <button
-                  type="submit"
-                  class="btn btn-primary w-100"
-                  formtarget="_blank"
-                >
-                  Start Timer
-                </button>
+                <small class="field-hint">
+                  Dipakai saat countdown selesai. Nonaktif otomatis pada mode
+                  countup.
+                </small>
+              </label>
+            </div>
+
+            <div class="preset-row" aria-label="Quick presets">
+              <button type="button" class="preset-chip" data-time="00:05:00">
+                5 menit
+              </button>
+              <button type="button" class="preset-chip" data-time="00:10:00">
+                10 menit
+              </button>
+              <button type="button" class="preset-chip" data-time="00:15:00">
+                15 menit
+              </button>
+              <button type="button" class="preset-chip" data-time="00:30:00">
+                30 menit
+              </button>
+              <button type="button" class="preset-chip" data-time="00:00:00">
+                Start 0
+              </button>
+              <button type="button" class="preset-chip" data-time="00:00:10:00">
+                10 detik + ms
+              </button>
+            </div>
+
+            <div class="section-subtitle">
+              <span>Timer style</span>
+              <p>Pilih tampilan dasar overlay sesuai suasana scene Anda.</p>
+            </div>
+            <input type="hidden" id="timer_style" name="timer_style" value="plain" />
+            <div class="style-options" role="list" aria-label="Timer styles">
+              <button type="button" class="style-option active" data-style="plain">
+                <strong>Plain</strong>
+                <span>Bersih dan minimal.</span>
+              </button>
+              <button type="button" class="style-option" data-style="glass">
+                <strong>Glass</strong>
+                <span>Panel transparan modern.</span>
+              </button>
+              <button type="button" class="style-option" data-style="card">
+                <strong>Card</strong>
+                <span>Setiap unit dalam kartu.</span>
+              </button>
+              <button type="button" class="style-option" data-style="bar">
+                <strong>Bar</strong>
+                <span>Dengan progress strip.</span>
+              </button>
+              <button type="button" class="style-option" data-style="circle">
+                <strong>Circle</strong>
+                <span>Mode badge / round timer.</span>
+              </button>
+              <button type="button" class="style-option" data-style="broadcast">
+                <strong>Broadcast</strong>
+                <span>Lebih tegas untuk live show.</span>
+              </button>
+            </div>
+          </section>
+
+          <section class="section-card">
+            <div class="section-title-row">
+              <div>
+                <h3>Typography</h3>
+                <p>
+                  Gunakan font populer untuk streaming, esports, countdown, dan
+                  display besar.
+                </p>
               </div>
             </div>
-          </form>
-        </div>
-      </div>
+
+            <div class="field-grid">
+              <label class="field field-span-2">
+                <span>Font family</span>
+                <div class="dropdown-shell">
+                  <input
+                    type="text"
+                    id="font"
+                    name="font"
+                    value="Space Grotesk"
+                    placeholder="Cari atau ketik nama font"
+                    autocomplete="off"
+                    role="combobox"
+                    aria-autocomplete="list"
+                    aria-controls="font-dropdown"
+                    aria-expanded="false"
+                    maxlength="80"
+                  />
+                  <ul
+                    id="font-dropdown"
+                    class="dropdown-menu"
+                    role="listbox"
+                  ></ul>
+                </div>
+                <small class="field-hint">
+                  Google Fonts akan dimuat otomatis pada overlay jika tersedia.
+                </small>
+              </label>
+
+              <label class="field field-span-2">
+                <span>Quick font picks</span>
+                <div class="font-picks" aria-label="Recommended fonts">
+                  <button type="button" class="font-pick" data-font="Bebas Neue">
+                    Bebas Neue
+                  </button>
+                  <button type="button" class="font-pick" data-font="Anton">
+                    Anton
+                  </button>
+                  <button type="button" class="font-pick" data-font="Rajdhani">
+                    Rajdhani
+                  </button>
+                  <button type="button" class="font-pick" data-font="Orbitron">
+                    Orbitron
+                  </button>
+                  <button type="button" class="font-pick" data-font="Oswald">
+                    Oswald
+                  </button>
+                  <button type="button" class="font-pick" data-font="Teko">
+                    Teko
+                  </button>
+                  <button type="button" class="font-pick" data-font="Space Grotesk">
+                    Space Grotesk
+                  </button>
+                  <button type="button" class="font-pick" data-font="Inter">
+                    Inter
+                  </button>
+                </div>
+              </label>
+
+              <label class="field">
+                <span>Font size</span>
+                <div class="range-combo">
+                  <input
+                    type="range"
+                    id="font_size_range"
+                    min="20"
+                    max="180"
+                    step="1"
+                    value="88"
+                  />
+                  <div class="number-input-wrap">
+                    <input
+                      type="number"
+                      id="font_size"
+                      name="font_size"
+                      value="88"
+                      min="20"
+                      max="180"
+                      step="1"
+                    />
+                    <span>px</span>
+                  </div>
+                </div>
+              </label>
+            </div>
+
+            <div class="section-subtitle">
+              <span>Text styling toggles</span>
+              <p>Aktifkan efek visual seperlunya agar overlay tetap terbaca.</p>
+            </div>
+            <div class="toggle-grid">
+              <label class="toggle-card">
+                <input type="checkbox" id="bold" name="bold" checked />
+                <span class="toggle-copy">
+                  <strong>Bold</strong>
+                  <small>Bobot lebih tegas.</small>
+                </span>
+              </label>
+              <label class="toggle-card">
+                <input type="checkbox" id="italic" name="italic" />
+                <span class="toggle-copy">
+                  <strong>Italic</strong>
+                  <small>Kesan lebih dinamis.</small>
+                </span>
+              </label>
+              <label class="toggle-card">
+                <input type="checkbox" id="underline" name="underline" />
+                <span class="toggle-copy">
+                  <strong>Underline</strong>
+                  <small>Tambahkan penekanan.</small>
+                </span>
+              </label>
+              <label class="toggle-card">
+                <input type="checkbox" id="stroke" name="stroke" />
+                <span class="toggle-copy">
+                  <strong>Stroke</strong>
+                  <small>Outline agar kontras naik.</small>
+                </span>
+              </label>
+              <label class="toggle-card">
+                <input type="checkbox" id="shadow" name="shadow" checked />
+                <span class="toggle-copy">
+                  <strong>Shadow</strong>
+                  <small>Lebih menonjol di scene terang.</small>
+                </span>
+              </label>
+            </div>
+          </section>
+
+          <section class="section-card">
+            <div class="section-title-row">
+              <div>
+                <h3>Overlay extras</h3>
+                <p>
+                  Kontrol labels, titles, warna, dan transparansi agar overlay
+                  siap dipakai di scene asli.
+                </p>
+              </div>
+            </div>
+
+            <div class="field-grid">
+              <label class="field">
+                <span>Background color</span>
+                <div class="color-field">
+                  <input
+                    type="color"
+                    id="bg_color"
+                    name="bg_color"
+                    value="#081120"
+                  />
+                  <input
+                    type="text"
+                    id="bg_color_text"
+                    value="#081120"
+                    maxlength="7"
+                    spellcheck="false"
+                  />
+                </div>
+              </label>
+
+              <label class="field">
+                <span>Text color</span>
+                <div class="color-field">
+                  <input
+                    type="color"
+                    id="text_color"
+                    name="text_color"
+                    value="#F8FAFC"
+                  />
+                  <input
+                    type="text"
+                    id="text_color_text"
+                    value="#F8FAFC"
+                    maxlength="7"
+                    spellcheck="false"
+                  />
+                </div>
+              </label>
+
+              <label class="field">
+                <span>Title color</span>
+                <div class="color-field">
+                  <input
+                    type="color"
+                    id="title_color"
+                    name="title_color"
+                    value="#FDBA74"
+                  />
+                  <input
+                    type="text"
+                    id="title_color_text"
+                    value="#FDBA74"
+                    maxlength="7"
+                    spellcheck="false"
+                  />
+                </div>
+              </label>
+
+              <label class="field">
+                <span>Title style</span>
+                <select id="title_style" name="title_style">
+                  <option value="default">Default</option>
+                  <option value="accent">Accent</option>
+                  <option value="outline">Outline</option>
+                  <option value="glow">Glow</option>
+                </select>
+              </label>
+
+              <label class="field field-span-2">
+                <span>Title font size</span>
+                <div class="range-combo">
+                  <input
+                    type="range"
+                    id="title_font_size_range"
+                    min="14"
+                    max="72"
+                    step="1"
+                    value="20"
+                  />
+                  <div class="number-input-wrap">
+                    <input
+                      type="number"
+                      id="title_font_size"
+                      name="title_font_size"
+                      value="20"
+                      min="14"
+                      max="72"
+                      step="1"
+                    />
+                    <span>px</span>
+                  </div>
+                </div>
+              </label>
+
+              <label class="field field-span-2">
+                <span>Time animation</span>
+                <select id="time_animation" name="time_animation">
+                  <option value="none">None</option>
+                  <option value="roller">Roller</option>
+                  <option value="slide-up">Slide up</option>
+                  <option value="slide-left">Slide left</option>
+                  <option value="pulse">Pulse</option>
+                  <option value="float">Float</option>
+                  <option value="glow">Glow</option>
+                </select>
+                <small id="time-animation-hint" class="field-hint">
+                  Gunakan animasi secukupnya agar timer tetap terbaca di stream.
+                </small>
+              </label>
+            </div>
+
+            <div class="toggle-stack">
+              <label class="switch-card" for="transparent">
+                <div>
+                  <strong>Transparent background</strong>
+                  <p>
+                    Jika aktif, iframe preview akan benar-benar transparan dan
+                    checkerboard di panel preview akan terlihat di belakangnya.
+                  </p>
+                </div>
+                <input
+                  type="checkbox"
+                  id="transparent"
+                  name="transparent"
+                  value="1"
+                />
+              </label>
+
+              <label class="switch-card" for="show_labels">
+                <div>
+                  <strong>Show labels</strong>
+                  <p>
+                    Tampilkan teks otomatis seperti hours, minutes, seconds, dan
+                    ms berdasarkan format timer.
+                  </p>
+                </div>
+                <input
+                  type="checkbox"
+                  id="show_labels"
+                  name="show_labels"
+                  value="1"
+                />
+              </label>
+
+              <div id="labels-settings" class="collapsible" hidden>
+                <div class="field-grid">
+                  <label class="field field-span-2">
+                    <span>Label position</span>
+                    <select id="label_position" name="label_position">
+                      <option value="bottom">Bottom labels</option>
+                      <option value="top">Top labels</option>
+                    </select>
+                  </label>
+                </div>
+              </div>
+
+              <label class="switch-card" for="show_titles">
+                <div>
+                  <strong>Show titles</strong>
+                  <p>
+                    Tambahkan title di atas dan subtitle di bawah timer untuk
+                    konteks seperti "Starting Soon" atau "Round 1".
+                  </p>
+                </div>
+                <input
+                  type="checkbox"
+                  id="show_titles"
+                  name="show_titles"
+                  value="1"
+                />
+              </label>
+
+              <div id="titles-settings" class="collapsible" hidden>
+                <div class="field-grid">
+                  <label class="field field-span-2">
+                    <span>Top title</span>
+                    <input
+                      type="text"
+                      id="title_top"
+                      name="title_top"
+                      value="Starting Soon"
+                      placeholder="Contoh: Match Begins In"
+                      maxlength="80"
+                    />
+                  </label>
+                  <label class="field field-span-2">
+                    <span>Bottom title</span>
+                    <input
+                      type="text"
+                      id="title_bottom"
+                      name="title_bottom"
+                      value="Get ready on stream"
+                      placeholder="Contoh: Stay tuned"
+                      maxlength="80"
+                    />
+                  </label>
+                </div>
+
+                <div class="section-subtitle">
+                  <span>Title text styling</span>
+                  <p>Atur bobot dan aksen visual title secara terpisah dari angka timer.</p>
+                </div>
+                <div class="toggle-grid">
+                  <label class="toggle-card">
+                    <input type="checkbox" id="title_bold" name="title_bold" checked />
+                    <span class="toggle-copy">
+                      <strong>Title bold</strong>
+                      <small>Judul lebih tegas.</small>
+                    </span>
+                  </label>
+                  <label class="toggle-card">
+                    <input type="checkbox" id="title_italic" name="title_italic" />
+                    <span class="toggle-copy">
+                      <strong>Title italic</strong>
+                      <small>Judul lebih dinamis.</small>
+                    </span>
+                  </label>
+                  <label class="toggle-card">
+                    <input type="checkbox" id="title_underline" name="title_underline" />
+                    <span class="toggle-copy">
+                      <strong>Title underline</strong>
+                      <small>Tambahkan penekanan title.</small>
+                    </span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="section-card">
+            <div class="section-title-row">
+              <div>
+                <h3>Output</h3>
+                <p>
+                  Buka overlay di tab baru atau salin URL final untuk browser
+                  source OBS dan Streamlabs.
+                </p>
+              </div>
+            </div>
+
+            <div class="action-row">
+              <button type="submit" class="primary-button" id="open-output">
+                Open overlay
+              </button>
+              <button type="button" class="secondary-button" id="copy-url">
+                Copy URL
+              </button>
+            </div>
+
+            <div class="generated-url-card">
+              <span class="field-label">Generated URL</span>
+              <code id="generated-url" aria-live="polite">Preparing preview...</code>
+            </div>
+          </section>
+        </form>
+
+        <aside class="preview-panel">
+          <div class="panel-header">
+            <div>
+              <span class="eyebrow">Live preview</span>
+              <h2>Overlay viewer</h2>
+            </div>
+            <div class="panel-header-tools">
+              <span id="status-badge" class="badge-pill neutral" aria-live="polite">
+                Checking
+              </span>
+              <button type="button" id="refresh-preview" class="ghost-button">
+                Refresh preview
+              </button>
+            </div>
+          </div>
+
+          <div class="preview-frame-shell">
+            <div id="preview-stage" class="preview-stage">
+              <iframe
+                id="preview-frame"
+                title="Live timer preview"
+                loading="eager"
+                allowtransparency="true"
+                referrerpolicy="no-referrer"
+              ></iframe>
+            </div>
+          </div>
+
+          <div class="preview-note">
+            <p id="status-message" aria-live="polite">
+              Preview akan ikut berubah setiap kali setting diperbarui.
+            </p>
+            <p class="preview-footnote">
+              Mode transparan menampilkan checkerboard hanya di viewer, sementara
+              iframe preview tetap memakai background transparan sungguhan.
+            </p>
+          </div>
+        </aside>
+      </main>
     </div>
+
     <script src="main.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>

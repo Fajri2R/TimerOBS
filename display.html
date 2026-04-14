@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,15 +7,99 @@
     <link rel="stylesheet" href="display.css" />
   </head>
   <body>
-    <div id="timer-container">
-      <div id="timer">
-        <span id="hours" class="time-part">00</span>
-        <span id="divider-hours" class="divider">:</span>
-        <span id="minutes" class="time-part">00</span>
-        <span id="divider-minutes" class="divider">:</span>
-        <span id="seconds" class="time-part">00</span>
+    <div id="timer-overlay">
+      <p id="title-top" class="overlay-title overlay-title-top"></p>
+
+      <div id="timer-shell">
+        <svg
+          id="circle-progress"
+          class="circle-progress"
+          viewBox="0 0 120 120"
+          aria-hidden="true"
+          hidden
+        >
+          <defs>
+            <linearGradient id="countdown-ring-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#FDE68A"></stop>
+              <stop offset="46%" stop-color="#FB923C"></stop>
+              <stop offset="100%" stop-color="#F97316"></stop>
+            </linearGradient>
+          </defs>
+          <circle class="ring-orbit" cx="60" cy="60" r="49"></circle>
+          <circle class="ring-track ring-track-secondary" cx="60" cy="60" r="58"></circle>
+          <circle class="ring-track" cx="60" cy="60" r="54"></circle>
+          <circle id="ring-glow" class="ring-glow" cx="60" cy="60" r="54"></circle>
+          <circle id="ring-tail" class="ring-tail" cx="60" cy="60" r="54"></circle>
+          <circle
+            id="ring-fill"
+            class="ring-fill"
+            cx="60"
+            cy="60"
+            r="54"
+          ></circle>
+        </svg>
+        <div
+          id="circle-progress-marker"
+          class="circle-progress-marker"
+          aria-hidden="true"
+          hidden
+        ></div>
+
+        <div id="timer-surface">
+          <div id="timer-values" class="timer-values">
+            <div id="group-hours" class="time-group" data-unit="hours">
+              <span class="segment-label label-top">hours</span>
+              <span id="hours" class="segment-value">00</span>
+              <span class="segment-label label-bottom">hours</span>
+            </div>
+            <span id="divider-hours" class="divider">:</span>
+
+            <div id="group-minutes" class="time-group" data-unit="minutes">
+              <span class="segment-label label-top">minutes</span>
+              <span id="minutes" class="segment-value">00</span>
+              <span class="segment-label label-bottom">minutes</span>
+            </div>
+            <span id="divider-minutes" class="divider">:</span>
+
+            <div id="group-seconds" class="time-group" data-unit="seconds">
+              <span class="segment-label label-top">seconds</span>
+              <span id="seconds" class="segment-value">00</span>
+              <span class="segment-label label-bottom">seconds</span>
+            </div>
+            <span id="divider-milliseconds" class="divider">:</span>
+
+            <div
+              id="group-milliseconds"
+              class="time-group"
+              data-unit="milliseconds"
+            >
+              <span class="segment-label label-top">ms</span>
+              <span id="milliseconds" class="segment-value">00</span>
+              <span class="segment-label label-bottom">ms</span>
+            </div>
+          </div>
+
+          <p id="end-message" class="end-message" hidden aria-live="polite"></p>
+
+          <div id="bar-style-shell" class="bar-style-shell" hidden>
+            <div class="bar-track">
+              <div id="bar-progress-fill" class="bar-progress-fill"></div>
+              <div id="bar-progress-thumb" class="bar-progress-thumb"></div>
+            </div>
+            <div class="bar-milestones" aria-hidden="true">
+              <span>Start</span>
+              <span>25%</span>
+              <span>50%</span>
+              <span>75%</span>
+              <span>Goal</span>
+            </div>
+          </div>
+        </div>
       </div>
+
+      <p id="title-bottom" class="overlay-title overlay-title-bottom"></p>
     </div>
+
     <script src="script.js"></script>
   </body>
 </html>
