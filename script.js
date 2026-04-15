@@ -47,6 +47,7 @@ const format = params.get('format') || 'hh:mm:ss';
 const font = params.get('font') || 'Space Grotesk';
 const backgroundColor = params.get('bg_color') || '#081120';
 const textColor = params.get('text_color') || '#F8FAFC';
+const circleColor = params.get('circle_color') || textColor;
 const titleColor = params.get('title_color') || '#FDBA74';
 const titleFontSize = Math.max(Number(params.get('title_font_size')) || 20, 14);
 const transparent = ['1', 'true', 'yes', 'on'].includes(
@@ -99,9 +100,6 @@ let activeProgressRatio = 0;
 let digitMeasureElement = null;
 
 let hasEnded = false;
-ringGlow.style.strokeDasharray = `${ringCircumference}`;
-ringTail.style.strokeDasharray = `${ringCircumference}`;
-ringFill.style.strokeDasharray = `${ringCircumference}`;
 
 function getProgressRatio(currentMilliseconds) {
   if (mode === 'countdown' && initialMilliseconds > 0) {
@@ -151,12 +149,27 @@ function loadFont(fontFamily) {
   loadedFonts.add(primaryFont);
 }
 
+function hexToRgba(hexColor, alpha) {
+  const normalized = hexColor.trim();
+  if (!/^#[0-9A-Fa-f]{6}$/.test(normalized)) {
+    return `rgba(248, 250, 252, ${alpha})`;
+  }
+
+  const red = Number.parseInt(normalized.slice(1, 3), 16);
+  const green = Number.parseInt(normalized.slice(3, 5), 16);
+  const blue = Number.parseInt(normalized.slice(5, 7), 16);
+  return `rgba(${red}, ${green}, ${blue}, ${alpha})`;
+}
+
 function applyDisplayStyles() {
   document.documentElement.style.setProperty(
     '--bg-color',
     transparent ? 'transparent' : backgroundColor,
   );
   document.documentElement.style.setProperty('--text-color', textColor);
+  document.documentElement.style.setProperty('--circle-color', circleColor);
+  document.documentElement.style.setProperty('--circle-glow-color', hexToRgba(circleColor, 0.16));
+  document.documentElement.style.setProperty('--circle-fill-color', hexToRgba(circleColor, 0.08));
   document.documentElement.style.setProperty('--title-color', titleColor);
   document.documentElement.style.setProperty('--title-font-size', `${titleFontSize}px`);
   document.documentElement.style.setProperty('--title-weight', isTitleBold ? '800' : '600');
@@ -192,6 +205,7 @@ function applyDisplayStyles() {
   );
 
   document.body.dataset.style = timerStyle;
+  document.body.dataset.format = format;
   document.body.dataset.titleStyle = titleStyle;
   document.body.dataset.timeAnimation = timeAnimation;
   document.body.dataset.preview = isPreview ? 'true' : 'false';
@@ -199,9 +213,19 @@ function applyDisplayStyles() {
   document.body.dataset.labelPosition = labelPosition;
   document.body.dataset.showTitles = showTitles ? 'true' : 'false';
   document.body.dataset.underline = isUnderline ? 'true' : 'false';
-  circleProgress.hidden = timerStyle !== 'circle';
-  circleProgressMarker.hidden = timerStyle !== 'circle';
-  barStyleShell.hidden = timerStyle !== 'bar';
+  if (timerStyle === 'circle') {
+    circleProgress.removeAttribute('hidden');
+    circleProgressMarker.removeAttribute('hidden');
+  } else {
+    circleProgress.setAttribute('hidden', '');
+    circleProgressMarker.setAttribute('hidden', '');
+  }
+
+  if (timerStyle === 'bar') {
+    barStyleShell.removeAttribute('hidden');
+  } else {
+    barStyleShell.setAttribute('hidden', '');
+  }
 
   titleTopElement.textContent = titleTop;
   titleBottomElement.textContent = titleBottom;
@@ -509,12 +533,15 @@ function updateCircleMarker(progressRatio) {
   circleProgressMarker.style.opacity = progressRatio <= 0.002 ? '0' : '1';
 }
 
+function applyCircleRingProgress(progressRatio) {
+  const clampedRatio = Math.min(Math.max(progressRatio, 0), 1);
+  overlayElement.style.setProperty('--circle-progress-angle', `${clampedRatio * 360}deg`);
+}
+
 function updateProgress(currentMilliseconds) {
   const progressRatio = getProgressRatio(currentMilliseconds);
   const circleBarRatio = progressRatio;
-  const circleBarLength = ringCircumference * circleBarRatio;
   activeProgressRatio = progressRatio;
-  overlayElement.style.setProperty('--circle-progress-angle', `${progressRatio * 360}deg`);
   overlayElement.style.setProperty('--circle-progress-ratio', `${circleBarRatio.toFixed(4)}`);
   overlayElement.style.setProperty(
     '--circle-active-opacity',
@@ -529,15 +556,7 @@ function updateProgress(currentMilliseconds) {
     const thumbPosition = Math.min(Math.max(progressRatio * 100, 2), 98);
     barProgressFill.style.width = `${progressRatio * 100}%`;
     barProgressThumb.style.left = `${thumbPosition}%`;
-    ringGlow.style.strokeDasharray =
-      circleBarLength <= 0.5 ? `0 ${ringCircumference}` : `${circleBarLength} ${ringCircumference}`;
-    ringGlow.style.strokeDashoffset = '0';
-    ringTail.style.strokeDasharray =
-      circleBarLength <= 0.5 ? `0 ${ringCircumference}` : `${circleBarLength} ${ringCircumference}`;
-    ringTail.style.strokeDashoffset = '0';
-    ringFill.style.strokeDasharray =
-      circleBarLength <= 0.5 ? `0 ${ringCircumference}` : `${circleBarLength} ${ringCircumference}`;
-    ringFill.style.strokeDashoffset = '0';
+    applyCircleRingProgress(circleBarRatio);
     updateCircleMarker(progressRatio);
     document.body.dataset.progressMode = 'static';
     return;
@@ -546,15 +565,7 @@ function updateProgress(currentMilliseconds) {
   const thumbPosition = Math.min(Math.max(progressRatio * 100, 2), 98);
   barProgressFill.style.width = `${progressRatio * 100}%`;
   barProgressThumb.style.left = `${thumbPosition}%`;
-  ringGlow.style.strokeDasharray =
-    circleBarLength <= 0.5 ? `0 ${ringCircumference}` : `${circleBarLength} ${ringCircumference}`;
-  ringGlow.style.strokeDashoffset = '0';
-  ringTail.style.strokeDasharray =
-    circleBarLength <= 0.5 ? `0 ${ringCircumference}` : `${circleBarLength} ${ringCircumference}`;
-  ringTail.style.strokeDashoffset = '0';
-  ringFill.style.strokeDasharray =
-    circleBarLength <= 0.5 ? `0 ${ringCircumference}` : `${circleBarLength} ${ringCircumference}`;
-  ringFill.style.strokeDashoffset = '0';
+  applyCircleRingProgress(circleBarRatio);
   updateCircleMarker(progressRatio);
   document.body.dataset.progressMode = 'static';
 }

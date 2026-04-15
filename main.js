@@ -12,6 +12,8 @@ const bgColorInput = document.getElementById('bg_color');
 const bgColorTextInput = document.getElementById('bg_color_text');
 const textColorInput = document.getElementById('text_color');
 const textColorTextInput = document.getElementById('text_color_text');
+const circleColorInput = document.getElementById('circle_color');
+const circleColorTextInput = document.getElementById('circle_color_text');
 const titleColorInput = document.getElementById('title_color');
 const titleColorTextInput = document.getElementById('title_color_text');
 const titleStyleInput = document.getElementById('title_style');
@@ -120,8 +122,10 @@ const formatGuides = {
 
 let previewTimeoutId = 0;
 let previewLoadTimeoutId = 0;
+let draftPersistTimeoutId = 0;
 let latestValidUrl = '';
 let activeFontIndex = -1;
+let lastDraftSnapshot = '';
 
 const STORAGE_KEY = 'timerobs_builder_state_v4';
 const DEFAULT_SETTINGS = {
@@ -133,6 +137,7 @@ const DEFAULT_SETTINGS = {
   font_size: '88',
   bg_color: '#081120',
   text_color: '#F8FAFC',
+  circle_color: '#F8FAFC',
   title_color: '#FDBA74',
   title_style: 'default',
   title_font_size: '20',
@@ -343,6 +348,7 @@ function captureFormState() {
     font_size: String(clampNumber(fontSizeInput.value, 20, 180, 88)),
     bg_color: normalizeHexColor(bgColorTextInput.value, DEFAULT_SETTINGS.bg_color),
     text_color: normalizeHexColor(textColorTextInput.value, DEFAULT_SETTINGS.text_color),
+    circle_color: normalizeHexColor(circleColorTextInput.value, DEFAULT_SETTINGS.circle_color),
     title_color: normalizeHexColor(titleColorTextInput.value, DEFAULT_SETTINGS.title_color),
     title_style: titleStyleInput.value,
     title_font_size: String(clampNumber(titleFontSizeInput.value, 14, 72, 20)),
@@ -367,12 +373,23 @@ function captureFormState() {
 
 function persistDraft() {
   try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(captureFormState()));
+    const nextSnapshot = JSON.stringify(captureFormState());
+    if (nextSnapshot === lastDraftSnapshot) {
+      return;
+    }
+
+    window.localStorage.setItem(STORAGE_KEY, nextSnapshot);
+    lastDraftSnapshot = nextSnapshot;
     setDraftState('Draft tersimpan otomatis di browser ini.');
   } catch (error) {
     setDraftState('Draft tidak bisa disimpan di browser ini.');
     console.error('Failed to persist builder draft:', error);
   }
+}
+
+function scheduleDraftPersist() {
+  window.clearTimeout(draftPersistTimeoutId);
+  draftPersistTimeoutId = window.setTimeout(persistDraft, 220);
 }
 
 function applySettings(settings) {
@@ -387,6 +404,8 @@ function applySettings(settings) {
   bgColorTextInput.value = bgColorInput.value;
   textColorInput.value = normalizeHexColor(settings.text_color, DEFAULT_SETTINGS.text_color);
   textColorTextInput.value = textColorInput.value;
+  circleColorInput.value = normalizeHexColor(settings.circle_color, DEFAULT_SETTINGS.circle_color);
+  circleColorTextInput.value = circleColorInput.value;
   titleColorInput.value = normalizeHexColor(settings.title_color, DEFAULT_SETTINGS.title_color);
   titleColorTextInput.value = titleColorInput.value;
   titleStyleInput.value = settings.title_style;
@@ -419,6 +438,7 @@ function restoreDraft() {
     }
 
     const savedSettings = JSON.parse(rawValue);
+    lastDraftSnapshot = JSON.stringify({ ...DEFAULT_SETTINGS, ...savedSettings });
     applySettings({ ...DEFAULT_SETTINGS, ...savedSettings });
     setDraftState('Draft terakhir berhasil dipulihkan.');
   } catch (error) {
@@ -431,6 +451,7 @@ function resetToDefaults() {
   applySettings(DEFAULT_SETTINGS);
   try {
     window.localStorage.removeItem(STORAGE_KEY);
+    lastDraftSnapshot = '';
   } catch (error) {
     console.error('Failed to clear builder draft:', error);
   }
@@ -470,13 +491,19 @@ function updateFeatureVisibility() {
   const isCardStyle = timerStyleInput.value === 'card';
   const endMessageField = endMessageInput.closest('.field');
   const titleFontField = titleFontSizeInput.closest('.field');
+  const circleColorField = circleColorInput.closest('.field');
   const titleColorField = titleColorInput.closest('.field');
   const titleStyleField = titleStyleInput.closest('.field');
   const timeAnimationField = timeAnimationInput.closest('.field');
   const areTitlesEnabled = showTitlesInput.checked;
+  const isCircleStyle = timerStyleInput.value === 'circle';
 
   endMessageInput.disabled = isCountup;
   endMessageField.classList.toggle('is-disabled', isCountup);
+
+  circleColorInput.disabled = !isCircleStyle;
+  circleColorTextInput.disabled = !isCircleStyle;
+  circleColorField.classList.toggle('is-disabled', !isCircleStyle);
 
   labelsSettings.hidden = !showLabelsInput.checked;
   labelPositionInput.disabled = !showLabelsInput.checked;
@@ -648,6 +675,7 @@ function buildDisplayUrl({ preview = false } = {}) {
 
   const backgroundColor = normalizeHexColor(bgColorTextInput.value, '#081120');
   const textColor = normalizeHexColor(textColorTextInput.value, '#F8FAFC');
+  const circleColor = normalizeHexColor(circleColorTextInput.value, '#F8FAFC');
   const titleColor = normalizeHexColor(titleColorTextInput.value, '#FDBA74');
 
   fontInput.value = safeFont;
@@ -659,6 +687,8 @@ function buildDisplayUrl({ preview = false } = {}) {
   bgColorTextInput.value = backgroundColor;
   textColorInput.value = textColor;
   textColorTextInput.value = textColor;
+  circleColorInput.value = circleColor;
+  circleColorTextInput.value = circleColor;
   titleColorInput.value = titleColor;
   titleColorTextInput.value = titleColor;
   endMessageInput.value = safeEndMessage;
@@ -673,6 +703,7 @@ function buildDisplayUrl({ preview = false } = {}) {
   url.searchParams.set('font_size', String(fontSize));
   url.searchParams.set('bg_color', backgroundColor);
   url.searchParams.set('text_color', textColor);
+  url.searchParams.set('circle_color', circleColor);
   url.searchParams.set('title_color', titleColor);
   url.searchParams.set('title_font_size', String(titleFontSize));
   url.searchParams.set('transparent', transparentInput.checked ? '1' : '0');
@@ -707,7 +738,7 @@ function buildDisplayUrl({ preview = false } = {}) {
 function updatePreview({ forceReload = false } = {}) {
   updateFeatureVisibility();
   previewStage.dataset.boardTone = getContrastTone(textColorTextInput.value);
-  persistDraft();
+  scheduleDraftPersist();
 
   const previewResult = buildDisplayUrl({ preview: true });
   const outputResult = buildDisplayUrl();
@@ -929,6 +960,7 @@ syncFontSizeInputs(fontSizeInput, fontSizeRange);
 syncFontSizeInputs(titleFontSizeInput, titleFontSizeRange);
 syncColorInputs(bgColorInput, bgColorTextInput);
 syncColorInputs(textColorInput, textColorTextInput);
+syncColorInputs(circleColorInput, circleColorTextInput);
 syncColorInputs(titleColorInput, titleColorTextInput);
 
 closeFontDropdown();

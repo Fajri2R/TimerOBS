@@ -18,6 +18,9 @@
   --title-filter: none;
   --title-stroke-size: 0;
   --accent: rgba(249, 115, 22, 0.92);
+  --circle-color: #f8fafc;
+  --circle-glow-color: rgba(248, 250, 252, 0.16);
+  --circle-fill-color: rgba(248, 250, 252, 0.08);
   --surface-bg: rgba(8, 17, 32, 0.72);
   --surface-line: rgba(255, 255, 255, 0.14);
   --surface-shadow: 0 16px 34px rgba(2, 6, 12, 0.18);
@@ -437,41 +440,102 @@ body[data-style='bar'] .time-group {
 
 body[data-style='circle'] {
   --style-scale: 0.56;
-  --circle-orbit-inset: 2.8%;
-  --circle-marker-offset: 6.1%;
+  --circle-orbit-inset: 7%;
+  --circle-ring-width: 14px;
+  --circle-ring-glow-width: 18px;
+  --circle-marker-size: 18px;
+  --circle-start-angle: 0deg;
+}
+
+body[data-style='circle'][data-format='hh:mm:ss'] {
+  --style-scale: 0.52;
+}
+
+body[data-style='circle'][data-format='hh:mm:ss:ms'] {
+  --style-scale: 0.4;
 }
 
 body[data-style='circle'] .timer-values {
-  position: relative;
+  position: absolute;
+  top: 50%;
+  left: 50%;
   z-index: 2;
-  flex-wrap: wrap;
-  row-gap: 0.22em;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+  width: max-content;
+  max-width: none;
+  row-gap: 0;
+  transform: translate(-50%, -50%);
 }
 
 body[data-style='circle'] .circle-progress {
+  position: absolute;
   display: block;
   inset: var(--circle-orbit-inset);
-  width: auto;
-  height: auto;
+  width: calc(100% - (var(--circle-orbit-inset) * 2));
+  height: calc(100% - (var(--circle-orbit-inset) * 2));
+  z-index: 0;
+  border-radius: 50%;
+  transform: none;
 }
 
 body[data-style='circle'] .circle-progress-marker {
-  display: block;
-  inset: var(--circle-orbit-inset);
+  display: none;
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transform: rotate(0deg);
+  transform-origin: center center;
+  transition: opacity 120ms ease;
+}
+
+body[data-style='circle'] .circle-progress-marker::after {
+  content: '';
+  position: absolute;
+  top: calc(var(--circle-ring-width) / 2);
+  left: 50%;
+  width: var(--circle-marker-size);
+  height: var(--circle-marker-size);
+  border-radius: 50%;
+  background: var(--text-color);
+  box-shadow:
+    0 0 12px rgba(255, 255, 255, 0.18),
+    0 0 30px rgba(255, 255, 255, 0.1);
+  transform: translate(-50%, -50%);
 }
 
 body[data-style='circle'] #timer-shell {
   display: grid;
   place-items: center;
-  width: clamp(320px, 52vmin, 620px);
+  width: clamp(340px, 54vmin, 620px);
   aspect-ratio: 1;
   isolation: isolate;
+  overflow: visible;
+}
+
+body[data-style='circle'][data-format='hh:mm:ss:ms'] #timer-shell {
+  width: clamp(420px, 64vmin, 760px);
+}
+
+body[data-style='circle'][data-format='hh:mm:ss:ms'] .timer-values {
+  gap: 0.05em;
+}
+
+body[data-style='circle'][data-format='hh:mm:ss:ms'] .divider {
+  width: auto;
+  margin-inline: 0;
+  font-size: calc(var(--font-size) * var(--style-scale) * 0.68);
 }
 
 body[data-style='circle'] #timer-surface {
+  position: relative;
+  display: grid;
+  place-items: center;
+  z-index: 2;
   width: 100%;
   height: 100%;
-  padding: 24%;
+  padding: 0;
   border: 0;
   border-radius: 999px;
   background: transparent;
@@ -491,18 +555,39 @@ body[data-style='circle'] .divider {
   width: 0.3em;
 }
 
+body[data-style='circle'] .time-group {
+  min-width: 0;
+}
+
+body[data-style='circle'] .segment-value {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 body[data-style='circle'] .ring-track,
 body[data-style='circle'] .ring-track-secondary,
 body[data-style='circle'] .ring-orbit,
 body[data-style='circle'] .ring-tail,
 body[data-style='circle'] .ring-glow,
 body[data-style='circle'] .ring-fill {
-  stroke-width: 5;
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  -webkit-mask: radial-gradient(
+    farthest-side,
+    transparent calc(100% - var(--circle-ring-width)),
+    #000 calc(100% - var(--circle-ring-width))
+  );
+  mask: radial-gradient(
+    farthest-side,
+    transparent calc(100% - var(--circle-ring-width)),
+    #000 calc(100% - var(--circle-ring-width))
+  );
 }
 
 body[data-style='circle'] .ring-track-secondary {
-  stroke-width: 0;
-  stroke: transparent;
+  display: none;
 }
 
 body[data-style='circle'] .ring-orbit {
@@ -510,50 +595,55 @@ body[data-style='circle'] .ring-orbit {
 }
 
 body[data-style='circle'] .ring-track {
-  stroke: rgba(255, 255, 255, 0.1);
-  stroke-width: 6.2;
+  background: rgba(255, 255, 255, 0.11);
 }
 
 body[data-style='circle'] .ring-glow {
-  stroke-width: 7.8;
-  stroke: rgba(255, 255, 255, 0.14);
-  stroke-linecap: round;
-  opacity: calc(var(--circle-active-opacity, 0) * 0.58);
-  filter: blur(1.8px);
+  background:
+    conic-gradient(
+      from var(--circle-start-angle),
+      var(--circle-glow-color) 0deg,
+      var(--circle-glow-color) var(--circle-progress-angle, 0deg),
+      transparent var(--circle-progress-angle, 0deg),
+      transparent 360deg
+    );
+  opacity: calc(var(--circle-active-opacity, 0) * 0.14);
+  filter: blur(1px);
   transition:
-    stroke-dasharray 66ms linear,
+    background 66ms linear,
     opacity 120ms ease;
 }
 
 body[data-style='circle'] .ring-tail {
-  fill: none;
-  stroke: var(--text-color);
-  stroke-width: 6.2;
-  stroke-linecap: round;
+  background:
+    conic-gradient(
+      from var(--circle-start-angle),
+      var(--circle-color) 0deg,
+      var(--circle-color) var(--circle-progress-angle, 0deg),
+      transparent var(--circle-progress-angle, 0deg),
+      transparent 360deg
+    );
   opacity: var(--circle-active-opacity, 0);
   filter: none;
   transition:
-    stroke-dasharray 66ms linear,
+    background 66ms linear,
     opacity 120ms ease;
 }
 
 body[data-style='circle'] .ring-fill {
-  stroke: rgba(255, 255, 255, 0.08);
-  stroke-width: 8.4;
-  stroke-linecap: round;
-  opacity: calc(var(--circle-active-opacity, 0) * 0.48);
-  filter: blur(1.6px);
+  background:
+    conic-gradient(
+      from var(--circle-start-angle),
+      var(--circle-fill-color) 0deg,
+      var(--circle-fill-color) var(--circle-progress-angle, 0deg),
+      transparent var(--circle-progress-angle, 0deg),
+      transparent 360deg
+    );
+  opacity: calc(var(--circle-active-opacity, 0) * 0.12);
+  filter: blur(0.4px);
   transition:
-    stroke-dasharray 66ms linear,
+    background 66ms linear,
     opacity 120ms ease;
-}
-
-body[data-style='circle'] .circle-progress-marker::after {
-  content: none;
-}
-
-body[data-style='circle'] .circle-progress-marker::before {
-  content: none;
 }
 
 body[data-style='circle'] #timer-surface::after {

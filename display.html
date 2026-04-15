@@ -11,39 +11,18 @@
       <p id="title-top" class="overlay-title overlay-title-top"></p>
 
       <div id="timer-shell">
-        <svg
-          id="circle-progress"
-          class="circle-progress"
-          viewBox="0 0 120 120"
-          aria-hidden="true"
-          hidden
-        >
-          <defs>
-            <linearGradient id="countdown-ring-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#FDE68A"></stop>
-              <stop offset="46%" stop-color="#FB923C"></stop>
-              <stop offset="100%" stop-color="#F97316"></stop>
-            </linearGradient>
-          </defs>
-          <circle class="ring-orbit" cx="60" cy="60" r="49"></circle>
-          <circle class="ring-track ring-track-secondary" cx="60" cy="60" r="58"></circle>
-          <circle class="ring-track" cx="60" cy="60" r="54"></circle>
-          <circle id="ring-glow" class="ring-glow" cx="60" cy="60" r="54"></circle>
-          <circle id="ring-tail" class="ring-tail" cx="60" cy="60" r="54"></circle>
-          <circle
-            id="ring-fill"
-            class="ring-fill"
-            cx="60"
-            cy="60"
-            r="54"
-          ></circle>
-        </svg>
-        <div
-          id="circle-progress-marker"
-          class="circle-progress-marker"
-          aria-hidden="true"
-          hidden
-        ></div>
+        <div id="circle-progress" class="circle-progress" aria-hidden="true">
+          <div class="ring-track ring-track-secondary"></div>
+          <div class="ring-track"></div>
+          <div id="ring-fill" class="ring-fill"></div>
+          <div id="ring-glow" class="ring-glow"></div>
+          <div id="ring-tail" class="ring-tail"></div>
+          <div
+            id="circle-progress-marker"
+            class="circle-progress-marker"
+            aria-hidden="true"
+          ></div>
+        </div>
 
         <div id="timer-surface">
           <div id="timer-values" class="timer-values">
